@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 
 
 		for(i = 0; i < thread_num; i++) {
-			if (pid > 0) {	        //Only want the parent creating children		
+			if (0 == 0) {	        //Only want the parent creating children		
 				pid = fork();
 				shd_matrix->children[i] = getpid();
 			}
@@ -94,16 +94,16 @@ int main(int argc, char** argv) {
 			}
 			
 			printf("Child process (%d)...\n", order);
-			start = /* fill here */;
-			end = /* fill here */;
+			start = order*(matrix_size / (order + 1));
+			end = start + (matrix_size / (order + 1));
 			
-			for (/* fill here */) {
+			for (i = start; i < end; i++) {
 				for (j=0;j<matrix_size;j++) {
 					sum=0;
 					for (e=0;e<matrix_size;e++) {
-						sum+=shd_matrix->A[/* fill here */]*shd_matrix->B[/* fill here */];
+						sum+=shd_matrix->A[i*matrix_size + e]*shd_matrix->B[j*matrix_size + e];
 					}
-					output[/* fill here */]=sum;
+					output[i * matrix_size + j]=sum;
 				}
 			}
 		}
@@ -113,15 +113,15 @@ int main(int argc, char** argv) {
 
 			// wait completion of children
 			wait();
-			C_parent = (int*)malloc(/* fill here */);
+			C_parent = (int*)malloc(matrix_size*matrix_size*sizeof(int));
 	
 			for (i=0;i<matrix_size;i++) {
 				for (j=0;j<matrix_size;j++) {
 					sum=0;
 					for (e=0;e<matrix_size;e++) {						
-						sum+=shd_matrix->A[/* fill here */]*shd_matrix->B[/* fill here */];
-					}	.
-					C_parent[/* fill here */]=sum;
+						sum+=shd_matrix->A[i*matrix_size + e]*shd_matrix->B[j*matrix_size + e];
+					}	
+					C_parent[i*matrix_size + j]=sum;
 				}
 			}
 
