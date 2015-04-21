@@ -28,6 +28,7 @@ int main(int argc, char** argv) {
 
 	// for fork
 	pid_t pid;
+	pid_t parent;
 	int shmid;
 	int shm_2d;
 	int* output;
@@ -51,7 +52,7 @@ int main(int argc, char** argv) {
 		shd_matrix->B = (int*)malloc(matrix_size*matrix_size*sizeof(int)); //Size of array B
 
 		// allocate shared memory for result		
-		shm_2d = shmget(IPC_PRIVATE, sizeof(shd_mem), IPC_CREAT | 0666);  //DEBUG: possibly wrong size of mem allocation
+		shm_2d = shmget(IPC_PRIVATE, matrix_size*matrix_size*sizeof(int), IPC_CREAT | 0666);  //DEBUG: possibly wrong size of mem allocation
 		output = (int*)shmat(shm_2d, NULL, 0);
 
 
@@ -60,15 +61,14 @@ int main(int argc, char** argv) {
 		GenRandomInput(shd_matrix->A, matrix_size);
 		GenRandomInput(shd_matrix->B, matrix_size);
 
-
+        //set parent pid
+        parent = getpid();
 		for(i = 0; i < thread_num; i++) {
-			if (0 == 0) {	        //Only want the parent creating children		
+			if (getpid() == parent) {	        //Only want the parent creating children		
 				pid = fork();
 				shd_matrix->children[i] = getpid();
 			}
 		}
-
-
 		//error occurred
 		if(pid < 0) {
 			fprintf(stderr, "Fork Failed");
@@ -85,7 +85,6 @@ int main(int argc, char** argv) {
 			shd_matrix = (shd_mem*)shared_memory;
 			output = (int*)shmat(shm_2d, NULL, 0);      //Result matrix 
 
-
 			for (i=0; i<shd_matrix->ch_num; i++) {
 				if (shd_matrix->children[i]==getpid()) {
 					order = i;
@@ -94,8 +93,8 @@ int main(int argc, char** argv) {
 			}
 			
 			printf("Child process (%d)...\n", order);
-			start = order*(matrix_size / (order + 1));
-			end = start + (matrix_size / (order + 1));
+			start = order*(matrix_size / (thread_num));
+			end = start + (matrix_size / (thread_num));
 			
 			for (i = start; i < end; i++) {
 				for (j=0;j<matrix_size;j++) {
@@ -160,7 +159,7 @@ int main(int argc, char** argv) {
 		    }
 		}
 	}
-
+    wait(NULL);
 	return 0;
 
 }

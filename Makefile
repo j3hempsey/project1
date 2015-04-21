@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-I. -g
+CFLAGS=-I.
 DEPS = common.h
 OBJ = common.o matmul.o 
 
