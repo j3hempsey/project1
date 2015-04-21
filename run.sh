@@ -6,20 +6,18 @@ child_number="1 2 4"
 total_child=0
 tmp=0
 
-for m in #Fill here
+for m in $matrix_size
 do
 	for t in $child_number
 	do	
 		echo "Execute matrixmul $m $t"
-		tmp=$(./Fill here | grep -o Child | wc -l)
+		tmp=$(./matrixmul $m $t | grep -o Child | wc -l)
 		# Fill here
-		total_child=$((...+...))
+		total_child=$(($total_child+$tmp))
 	done
 done
 
-# Fill here: print total how many child processes
-# were used to calculate matrix multiplication
-echo "..."
+echo "Total $total_child children are used to preform matrix multiplication"
 
 
 
